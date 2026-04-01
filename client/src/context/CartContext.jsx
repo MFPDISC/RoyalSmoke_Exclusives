@@ -67,7 +67,7 @@ export const CartProvider = ({ children }) => {
 
     const addToCart = (product) => {
         setCartItems(prev => {
-            const isMembership = String(product.id).startsWith('membership-');
+            const isMembership = String(product.id).startsWith('membership-') || product.category === 'Membership';
             const existing = prev.find(item => item.id === product.id);
 
             if (existing) {
@@ -81,7 +81,7 @@ export const CartProvider = ({ children }) => {
 
             // If adding membership, remove any existing membership first (only one tier allowed)
             if (isMembership) {
-                const filteredCart = prev.filter(item => !String(item.id).startsWith('membership-'));
+                const filteredCart = prev.filter(item => !String(item.id).startsWith('membership-') && item.category !== 'Membership');
                 return [...filteredCart, { ...product, quantity: 1 }];
             }
 
