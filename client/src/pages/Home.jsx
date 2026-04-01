@@ -638,8 +638,11 @@ const Home = () => {
                                 <Shield size={24} className="text-green-400" />
                             </div>
                             <div>
-                                <h4 className="text-white font-bold text-base md:text-lg mb-1">Freshness & Authenticity Guarantee</h4>
-                                <p className="text-gray-400 text-sm">Cracked or unsmokable sticks replaced free. If tracked shipment arrives 72+ hours late, you get R200 store credit.</p>
+                                <h4 className="text-white font-bold text-base md:text-lg mb-1">Freshness & Regulatory Guarantee</h4>
+                                <p className="text-gray-400 text-sm leading-relaxed">
+                                    Cracked or unsmokable sticks replaced free. 18+ Adult use only. 
+                                    <strong className="text-white font-bold"> ID must be presented upon delivery</strong> in accordance with South African regulatory guidelines.
+                                </p>
                             </div>
                         </div>
                     </div>

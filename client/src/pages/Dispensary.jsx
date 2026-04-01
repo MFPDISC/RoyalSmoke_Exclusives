@@ -53,24 +53,26 @@ const Dispensary = () => {
                 <div className="bg-green-500/10 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 border border-green-500/20">
                     <Leaf className="text-green-500" size={40} />
                 </div>
-                <h1 className="text-4xl font-serif text-white mb-4">Dispensary Access</h1>
-                <p className="text-gray-400 mb-8 leading-relaxed">
-                    Our dispensary menu is exclusive to registered members for compliance. 
-                    Membership is free and instant.
-                </p>
-                <div className="grid gap-4">
-                    <button 
-                        onClick={() => navigate('/account')}
-                        className="bg-green-600 hover:bg-green-500 text-white font-black py-4 rounded-xl transition shadow-xl"
-                    >
-                        Sign Up for Free Membership
-                    </button>
-                    <button 
-                        onClick={() => navigate('/account')}
-                        className="text-gray-500 hover:text-white text-sm font-bold uppercase tracking-widest"
-                    >
-                        Already a member? Sign In
-                    </button>
+                <div className="bg-dark-800 border border-white/5 rounded-3xl p-8 mb-8">
+                    <h2 className="text-xl font-bold text-white mb-2">Age Verification Required (18+)</h2>
+                    <p className="text-gray-400 mb-6 text-sm leading-relaxed">
+                        In accordance with South African regulatory guidelines, the Exotic Dispensary is strictly for adults aged 18 and older. 
+                        <strong className="text-green-500 block mt-2">A valid ID must be presented to the courier upon delivery. No exceptions.</strong>
+                    </p>
+                    <div className="grid gap-4">
+                        <button 
+                            onClick={() => navigate('/account')}
+                            className="bg-green-600 hover:bg-green-500 text-white font-black py-4 rounded-xl transition shadow-xl"
+                        >
+                            Sign Up / Register for Access
+                        </button>
+                        <button 
+                            onClick={() => navigate('/account')}
+                            className="text-gray-500 hover:text-white text-sm font-bold uppercase tracking-widest"
+                        >
+                            Already a member? Sign In
+                        </button>
+                    </div>
                 </div>
             </div>
         );
@@ -205,9 +207,9 @@ const Dispensary = () => {
                 <div>
                     <h4 className="text-white font-bold text-lg mb-1">Safe & Compliant Access</h4>
                     <p className="text-gray-400 text-sm leading-relaxed">
-                        In accordance with South African law, these products are provided within a private membership context. 
-                        Membership is voluntary and provides access to our curated premium cannabis selection. 
-                        By ordering, you acknowledge you are 18+ and a registered member.
+                        In accordance with South African law and regulatory guidelines, these products are provided within a private membership context for personal use only. 
+                        Access is strictly restricted to adults aged 18 and over. 
+                        <strong className="text-green-500"> A valid original ID must be presented to the courier upon delivery to verify age.</strong> No underage sales will occur.
                     </p>
                 </div>
             </div>
