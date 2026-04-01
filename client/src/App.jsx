@@ -234,15 +234,22 @@ const Account = () => {
       return;
     }
     setLoading(true);
-    try {
-      await axios.post(`${API}/auth/request-pin`, { phone: identifier });
-      setAuthMessage('PIN sent to your phone.');
-      setLoginMode('pin');
-    } catch (err) {
-      alert(err.response?.data?.error || 'Could not send PIN');
-    } finally {
-      setLoading(false);
-    }
+    
+    // Simulate interactive signup without needing real SMS/PIN
+    setTimeout(() => {
+        const mockCustomer = {
+            id: 'mock-' + Date.now(),
+            name: identifier.split('@')[0] || 'Member',
+            phone: identifier,
+            email: identifier.includes('@') ? identifier : null,
+            is_vip: true,
+            tier: 'reserve-club'
+        };
+        localStorage.setItem('royal_customer', JSON.stringify(mockCustomer));
+        setCustomer(mockCustomer);
+        setAuthMessage('Registration successful! Welcome to the club.');
+        setLoading(false);
+    }, 1500);
   };
 
   const handleSetPassword = async () => {

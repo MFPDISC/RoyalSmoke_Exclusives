@@ -7,6 +7,7 @@ const uberService = require('../services/uberService');
 const uberDemoService = require('../services/uberDemoService');
 const twilioService = require('../services/twilioService');
 const ghlService = require('../services/ghlService');
+const emailService = require('../services/emailService');
 
 const dbPath = path.resolve(__dirname, '../../database/royalsmoke.db');
 const db = new Database(dbPath);
@@ -249,6 +250,18 @@ router.post('/', async (req, res) => {
                 eta: '30-45 min'
             }).catch(err => console.error('[GHL] Order confirmation webhook failed:', err.message));
         }
+
+        // Send email notification (async)
+        const emailOrder = {
+            id: result.orderId,
+            total_amount: total_amount,
+            delivery_fee: delivery_fee,
+            items: items.map(idx => {
+                const p = db.prepare('SELECT name FROM products WHERE id = ?').get(idx.product_id);
+                return { ...idx, name: p ? p.name : idx.product_id };
+            })
+        };
+        emailService.sendOrderNotification(emailOrder, customer).catch(err => console.error('[EMAIL] Order sync failed:', err.message));
 
         // Send order confirmation SMS
         twilioService.sendOrderConfirmation(
