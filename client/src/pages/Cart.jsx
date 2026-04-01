@@ -52,7 +52,7 @@ const Cart = () => {
     const whatsappNumber = '27727346573';
 
     // Check for any membership tier in cart
-    const membershipInCart = cartItems.find((i) => String(i.id).startsWith('membership-'));
+    const membershipInCart = cartItems.find((i) => String(i.id).startsWith('membership-') || i.category === 'Membership');
     const hasVipMembership = !!membershipInCart;
     const [vipTier, setVipTier] = useState(null); // 'status', 'reserve-club', 'founders-black'
 
@@ -98,12 +98,12 @@ const Cart = () => {
     const roundMoney = (n) => Math.round(Number(n) * 100) / 100;
 
     const getOriginalUnitPrice = (item) => {
-        if (String(item?.id).startsWith('membership-')) return Number(item.price_zar);
+        if (String(item?.id).startsWith('membership-') || item?.category === 'Membership') return Number(item.price_zar);
         return Number(item.original_price_zar ?? item.price_zar);
     };
 
     const getEffectiveUnitPrice = (item, quantity) => {
-        if (String(item?.id).startsWith('membership-')) return Number(item.price_zar);
+        if (String(item?.id).startsWith('membership-') || item?.category === 'Membership') return Number(item.price_zar);
 
         const original = getOriginalUnitPrice(item);
         const current = Number(item.price_zar);
@@ -149,7 +149,7 @@ const Cart = () => {
             lineTotal: roundMoney(effectiveUnit * qty),
             savings,
             isDiscounted: effectiveUnit < originalUnit,
-            isMembership: String(item.id).startsWith('membership-'),
+            isMembership: String(item.id).startsWith('membership-') || item.category === 'Membership',
             nextTierMsg
         };
     });
@@ -268,7 +268,7 @@ const Cart = () => {
     const addMembership = (tier) => {
         if (hasVipMembership) {
             // Remove existing membership first
-            const existingMembership = cartItems.find(i => String(i.id).startsWith('membership-'));
+            const existingMembership = cartItems.find((i) => String(i.id).startsWith('membership-') || i.category === 'Membership');
             if (existingMembership) removeFromCart(existingMembership.id);
         }
 

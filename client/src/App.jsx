@@ -291,14 +291,17 @@ const Account = () => {
 
   const lastOrder = orders.length > 0 ? orders[0] : null;
   const recommendedProducts = allProducts
-    .filter(p => !String(p.id).startsWith('membership-'))
+    .filter(p => !String(p.id).startsWith('membership-') && p.category !== 'Membership')
     .sort((a, b) => b.stock_qty - a.stock_qty)
     .slice(0, 4);
 
   if (!customer) {
     return (
       <div className="max-w-xl mx-auto py-12 px-6">
-        <h1 className="text-4xl font-serif text-white mb-8 text-center">My Account</h1>
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-serif text-white mb-2">My Account</h1>
+          <p className="text-gray-500">Sign up or sign in using your mobile number.</p>
+        </div>
         <div className="bg-dark-800 border border-white/5 rounded-3xl p-8 shadow-2xl">
           <form onSubmit={handleLogin} className="space-y-6">
             <div>
@@ -378,7 +381,7 @@ const Account = () => {
               className="group relative w-full bg-gold-500 text-black font-black py-4 rounded-xl hover:bg-gold-400 active:scale-[0.98] transition-all shadow-xl overflow-hidden"
             >
               <div className="relative z-10 flex items-center justify-center gap-2">
-                {loading ? 'Processing...' : 'Secure Sign In'}
+                {loading ? 'Processing...' : 'Sign In / Register'}
                 <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </div>
             </button>
