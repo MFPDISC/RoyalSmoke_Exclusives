@@ -29,17 +29,30 @@ const Home = () => {
     };
 
     const handleSelectMembership = (tier, name, price, description) => {
+        // Find the real product from the seeded database
+        const realProduct = products.find(p => p.category === 'Membership' && p.name.toLowerCase().includes(name.toLowerCase()));
+        
+        if (realProduct) {
+            addToCart({
+                ...realProduct,
+                isSubscription: true,
+                tier: tier
+            });
+        } else {
+            // Fallback for safety (though seeds should exist)
+            addToCart({
+                id: `membership-${tier}`,
+                name: `${name} Membership`,
+                price_zar: price,
+                image_url: royalsmokeExclusives,
+                description: description,
+                stock_qty: tier === 'founders-black' ? 200 : 999,
+                isSubscription: true,
+                tier: tier
+            });
+        }
+        
         try { localStorage.setItem('royal_vip', tier); setIsVip(true); } catch { }
-        addToCart({
-            id: `membership-${tier}`,
-            name: `${name} Membership`,
-            price_zar: price,
-            image_url: royalsmokeExclusives,
-            description: description,
-            stock_qty: tier === 'founders-black' ? 200 : 999,
-            isSubscription: true,
-            tier: tier
-        });
         setToast({ show: true, message: `${name} added to cart!`, tier });
         setTimeout(() => {
             setToast({ show: false, message: '', tier: '' });
