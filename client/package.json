@@ -2,6 +2,7 @@
   "name": "client",
   "private": true,
   "version": "0.0.0",
+  "homepage": "https://mfpdisc.github.io/RoyalSmoke_Exclusives/",
   "type": "module",
   "scripts": {
     "dev": "vite",
