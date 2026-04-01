@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <!-- Luxurious Dark Background -->
+  <rect width="512" height="512" fill="#18181b"/>
+  
+  <!-- Cigar Body -->
+  <g transform="rotate(45, 256, 256)">
+    <!-- Main Body -->
+    <rect x="156" y="100" width="200" height="312" rx="20" fill="#5D4037"/>
+    <!-- Texture Lines -->
+    <path d="M170 120H340" stroke="#4E342E" stroke-width="4" stroke-opacity="0.5"/>
+    <path d="M170 160H340" stroke="#4E342E" stroke-width="4" stroke-opacity="0.5"/>
+    <path d="M170 240H340" stroke="#4E342E" stroke-width="4" stroke-opacity="0.5"/>
+    <path d="M170 280H340" stroke="#4E342E" stroke-width="4" stroke-opacity="0.5"/>
+    <path d="M170 360H340" stroke="#4E342E" stroke-width="4" stroke-opacity="0.5"/>
+    <path d="M170 400H340" stroke="#4E342E" stroke-width="4" stroke-opacity="0.5"/>
+
+    <!-- Ash Tip -->
+    <path d="M156 100C156 88.9543 164.954 80 176 80H336C347.046 80 356 88.9543 356 100V120H156V100Z" fill="#9CA3AF"/>
+    <path d="M200 90L220 110" stroke="#6B7280" stroke-width="3"/>
+    <path d="M280 90L260 110" stroke="#6B7280" stroke-width="3"/>
+    <!-- Ember -->
+    <circle cx="200" cy="80" r="4" fill="#EF4444" fill-opacity="0.8"/>
+    <circle cx="280" cy="85" r="3" fill="#EF4444" fill-opacity="0.6"/>
+
+    <!-- Premium Band -->
+    <rect x="154" y="280" width="204" height="80" fill="#B91C1C"/>
+    <!-- Gold Trim -->
+    <rect x="154" y="280" width="204" height="6" fill="#FCD34D"/>
+    <rect x="154" y="354" width="204" height="6" fill="#FCD34D"/>
+    <!-- Band Decoration -->
+    <circle cx="256" cy="320" r="24" fill="#FCD34D"/>
+    <circle cx="256" cy="320" r="18" fill="#B91C1C"/>
+    <path d="M246 320L256 310L266 320L256 330L246 320Z" fill="#FCD34D"/>
+  </g>
+
+  <!-- Smoke Wisps -->
+  <path d="M280 120C280 120 320 80 320 60C320 40 300 40 300 40" stroke="#9CA3AF" stroke-width="8" stroke-linecap="round" stroke-opacity="0.4"/>
+  <path d="M300 140C300 140 350 100 350 70C350 40 330 30 330 30" stroke="#9CA3AF" stroke-width="6" stroke-linecap="round" stroke-opacity="0.3"/>
+</svg>
