@@ -10,7 +10,7 @@ const membershipPlans = [
     {
         name: 'Member Access - Annual VIP',
         description: 'Tier 1: 10% storewide discount (up to R1,000/month) + box pricing on 6+ singles + R99 shipping credit + 24h early access to new drops. Billed annually (2 months free vs monthly).',
-        price_zar: 1490, // R149/month x 10 months
+        price_zar: 2990, // R299/month x 10 months
         category: 'Membership',
         image_url: 'https://images.unsplash.com/photo-1556742400-b5b7c256b589?w=800',
         stock_qty: 999,
@@ -19,7 +19,7 @@ const membershipPlans = [
     {
         name: 'Reserve Club - Annual VIP',
         description: 'Tier 2: 1 free best-seller cigar/month + 15% storewide discount + R99 shipping credit + 48h early access + Reserve Token. Billed annually (2 months free vs monthly).',
-        price_zar: 7490, // R749/month x 10 months
+        price_zar: 11990, // R1,199/month x 10 months
         category: 'Membership',
         image_url: 'https://images.unsplash.com/photo-1583225214464-9296029427aa?w=800',
         stock_qty: 999,
@@ -28,7 +28,7 @@ const membershipPlans = [
     {
         name: 'Founders Black - Annual VIP',
         description: 'Tier 3: 2 free best-seller cigars/month + 20% storewide discount + free same-day dispatch priority + concierge sourcing + Founder-only drops + Founders Coin. Billed annually (2 months free vs monthly).',
-        price_zar: 14990, // R1,499/month x 10 months
+        price_zar: 34990, // R3,499/month x 10 months
         category: 'Membership',
         image_url: 'https://images.unsplash.com/photo-1594534168065-e2e0c9e0eb1b?w=800',
         stock_qty: 200, // Limited to 200 members
@@ -39,10 +39,15 @@ const membershipPlans = [
 async function seedMembershipProducts() {
     console.log('🎯 Starting membership products seed...\n');
 
+    // 0. Clear existing membership products to ensure "only 3" rule
+    console.log('🧹 Clearing existing membership products...');
+    db.prepare("DELETE FROM products WHERE category = 'Membership'").run();
+    console.log('✅ Previous memberships cleared.\n');
+
     for (const plan of membershipPlans) {
         console.log(`📦 Processing: ${plan.name}`);
 
-        // Check if product already exists
+        // Check if product already exists (though we just cleared them, name check is safe)
         const existing = db.prepare('SELECT * FROM products WHERE name = ?').get(plan.name);
 
         let productId;

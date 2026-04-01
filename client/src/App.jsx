@@ -27,6 +27,7 @@ const Cart = lazy(() => import('./pages/Cart'));
 const OrderTracking = lazy(() => import('./pages/OrderTracking'));
 const Admin = lazy(() => import('./pages/Admin'));
 const StoreDashboard = lazy(() => import('./pages/StoreDashboard'));
+const Dispensary = lazy(() => import('./pages/Dispensary'));
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
 
@@ -842,6 +843,7 @@ function App() {
               <Route path="payment-instructions" element={<PaymentInstructions />} />
               <Route path="track/:orderId" element={<OrderTracking />} />
               <Route path="track" element={<OrderTracking />} />
+              <Route path="dispensary" element={<Dispensary />} />
               <Route path="admin" element={<Admin />} />
               <Route path="store" element={<StoreDashboard />} />
               <Route path="*" element={<Navigate to="/" replace />} />

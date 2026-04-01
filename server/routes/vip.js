@@ -9,8 +9,8 @@ const db = new Database(dbPath);
 // Tier configuration
 const TIER_CONFIG = {
     'status': { price: 299, discount: 0.10, cigarsPerMonth: 0, name: 'Status Access' },
-    'reserve-club': { price: 1499, discount: 0.15, cigarsPerMonth: 2, name: 'Reserve Club' },
-    'founders-black': { price: 2499, discount: 0.20, cigarsPerMonth: 3, name: 'Founders Black' }
+    'reserve-club': { price: 1199, discount: 0.15, cigarsPerMonth: 2, name: 'Reserve Club' },
+    'founders-black': { price: 3499, discount: 0.20, cigarsPerMonth: 3, name: 'Founders Black' }
 };
 
 /**

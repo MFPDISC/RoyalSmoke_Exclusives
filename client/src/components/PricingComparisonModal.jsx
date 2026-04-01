@@ -6,8 +6,8 @@ const PricingComparisonModal = ({ onClose, currentCartTotal = 0 }) => {
         {
             id: 'member-access',
             name: 'Member Access',
-            monthlyPrice: 149,
-            annualPrice: 1490,
+            monthlyPrice: 299,
+            annualPrice: 2990,
             color: 'gray',
             benefits: [
                 '10% off everything (up to R1,000/month)',
@@ -19,8 +19,8 @@ const PricingComparisonModal = ({ onClose, currentCartTotal = 0 }) => {
         {
             id: 'reserve-club',
             name: 'Reserve Club',
-            monthlyPrice: 749,
-            annualPrice: 7490,
+            monthlyPrice: 1199,
+            annualPrice: 11990,
             color: 'purple',
             popular: true,
             benefits: [
@@ -34,8 +34,8 @@ const PricingComparisonModal = ({ onClose, currentCartTotal = 0 }) => {
         {
             id: 'founders-black',
             name: 'Founders Black',
-            monthlyPrice: 1499,
-            annualPrice: 14990,
+            monthlyPrice: 3499,
+            annualPrice: 34990,
             color: 'gold',
             benefits: [
                 '2 free best-seller cigars/month',

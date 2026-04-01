@@ -72,8 +72,8 @@ const Home = () => {
             id: 'vip-membership',
             name: 'Join the Reserve Club',
             description: 'Get 1 free best-seller cigar every month + 15% off everything. Skip the lines with 48-hour early access.',
-            finalPrice: 899,
-            savings: 'R899/month',
+            finalPrice: 1199,
+            savings: 'R1199/month',
             image: royalsmokeExclusives,
             badge: 'Limited Spots',
             isMembership: true,
@@ -265,7 +265,7 @@ const Home = () => {
                                             addToCart({
                                                 id: 'membership-monthly',
                                                 name: 'RoyalSmoke Exclusive Membership',
-                                                price_zar: 799,
+                                                price_zar: 1199,
                                                 image_url: special.image,
                                                 description: 'Monthly membership: Free cigar + 25% off all orders',
                                                 stock_qty: 999,
@@ -358,7 +358,7 @@ const Home = () => {
                             <h3 className="text-xl md:text-2xl font-bold text-white mb-2">Member Access</h3>
                             <p className="text-gray-400 text-sm mb-2">Best for: casual buyers who want better pricing + early access.</p>
                             <div className="flex items-baseline gap-1">
-                                <span className="text-3xl md:text-4xl font-extrabold text-white">R149</span>
+                                <span className="text-3xl md:text-4xl font-extrabold text-white">R299</span>
                                 <span className="text-gray-400">/mo</span>
                             </div>
                         </div>
@@ -402,14 +402,14 @@ const Home = () => {
                         </div>
 
                         <button
-                            onClick={() => handleSelectMembership('member-access', 'Member Access', 149, 'Monthly: 10% storewide discount (up to R1,000/month) + box pricing on 6+ + R99 shipping credit + 24h early access')}
+                            onClick={() => handleSelectMembership('member-access', 'Member Access', 299, 'Monthly: 10% storewide discount (up to R1,000/month) + box pricing on 6+ + R99 shipping credit + 24h early access')}
                             className="w-full bg-gray-700 hover:bg-gray-600 text-white font-bold py-3 rounded-xl transition-all duration-300"
                         >
                             Get Member Access
                         </button>
 
                         <div className="text-center mt-3">
-                            <span className="text-gray-500 text-xs">Annual: R1,490/yr (2 months free)</span>
+                            <span className="text-gray-500 text-xs">Annual: R2,990/yr (2 months free)</span>
                         </div>
                     </div>
 
@@ -426,7 +426,7 @@ const Home = () => {
                             <h3 className="text-xl md:text-2xl font-bold text-white mb-2">Reserve Club</h3>
                             <p className="text-gray-400 text-sm mb-2">Best for: regular buyers who want "auto-savings" + drop protection.</p>
                             <div className="flex items-baseline gap-1">
-                                <span className="text-3xl md:text-4xl font-extrabold text-white">R749</span>
+                                <span className="text-3xl md:text-4xl font-extrabold text-white">R1199</span>
                                 <span className="text-gray-400">/mo</span>
                             </div>
                         </div>
@@ -478,14 +478,14 @@ const Home = () => {
                         </div>
 
                         <button
-                            onClick={() => handleSelectMembership('reserve-club', 'Reserve Club', 749, 'Monthly: 1 free best-seller cigar + 15% off + R99 shipping credit + 48h early access + Reserve Token')}
+                            onClick={() => handleSelectMembership('reserve-club', 'Reserve Club', 1199, 'Monthly: 1 free best-seller cigar + 15% off + R99 shipping credit + 48h early access + Reserve Token')}
                             className="w-full bg-purple-500 hover:bg-purple-600 text-white font-extrabold py-3 rounded-xl transition-all duration-300 shadow-lg"
                         >
                             Join Reserve Club
                         </button>
 
                         <div className="text-center mt-3">
-                            <span className="text-purple-300 text-xs">Annual: R7,490/yr (2 months free)</span>
+                            <span className="text-purple-300 text-xs">Annual: R11,990/yr (2 months free)</span>
                         </div>
                     </div>
 
@@ -502,7 +502,7 @@ const Home = () => {
                             <h3 className="text-xl md:text-2xl font-bold text-white mb-2">Founders Black</h3>
                             <p className="text-gray-400 text-sm mb-2">Best for: collectors who want priority access, speed, and concierge sourcing.</p>
                             <div className="flex items-baseline gap-1">
-                                <span className="text-3xl md:text-4xl font-extrabold text-white">R1,499</span>
+                                <span className="text-3xl md:text-4xl font-extrabold text-white">R3,499</span>
                                 <span className="text-gray-400">/mo</span>
                             </div>
                         </div>
@@ -569,14 +569,14 @@ const Home = () => {
 
 
                         <button
-                            onClick={() => handleSelectMembership('founders-black', 'Founders Black', 1499, 'Monthly: 2 free best-seller cigars + 20% off + same-day dispatch + concierge sourcing + Founder-only drops + Founders Coin')}
+                            onClick={() => handleSelectMembership('founders-black', 'Founders Black', 3499, 'Monthly: 2 free best-seller cigars + 20% off + same-day dispatch + concierge sourcing + Founder-only drops + Founders Coin')}
                             className="w-full bg-gradient-to-r from-gold-500 to-gold-600 hover:from-gold-600 hover:to-gold-700 text-black font-extrabold py-3 rounded-xl transition-all duration-300 shadow-lg"
                         >
                             Claim a Founders Spot
                         </button>
 
                         <div className="text-center mt-3">
-                            <span className="text-gold-400 text-xs">Annual: R14,990/yr (2 months free) + Founders gift</span>
+                            <span className="text-gold-400 text-xs">Annual: R34,990/yr (2 months free) + Founders gift</span>
                         </div>
                     </div>
                 </div>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, Link } from 'react-router-dom';
-import { ShoppingCart, LogIn, Menu, X, Zap } from 'lucide-react';
+import { ShoppingCart, LogIn, Menu, X, Zap, Leaf } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import LeadMagnetPopup from '../components/LeadMagnetPopup';
 
@@ -191,6 +191,10 @@ const MainLayout = () => {
                             <Link to="/" className="hover:text-gold-400 transition">Home</Link>
                             <Link to="/cigars" className="hover:text-gold-400 transition">Cigars</Link>
                             <Link to="/about" className="hover:text-gold-400 transition">About</Link>
+                            <Link to="/dispensary" className="hover:text-green-500 transition-all flex items-center gap-2 group">
+                                <Leaf className="w-5 h-5 group-hover:fill-green-500/20" />
+                                <span>Dispensary</span>
+                            </Link>
                             <Link to="/account" className="hover:text-gold-400 transition flex items-center gap-2">
                                 <LogIn className="w-5 h-5" />
                                 <span>My Account</span>
@@ -220,6 +224,10 @@ const MainLayout = () => {
                         <Link to="/" className="block py-2 hover:text-gold-400" onClick={() => setIsMenuOpen(false)}>Home</Link>
                         <Link to="/cigars" className="block py-2 hover:text-gold-400" onClick={() => setIsMenuOpen(false)}>Cigars</Link>
                         <Link to="/about" className="block py-2 hover:text-gold-400" onClick={() => setIsMenuOpen(false)}>About</Link>
+                        <Link to="/dispensary" className="block py-2 text-green-500 font-bold flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
+                            <Leaf size={18} />
+                            Dispensary
+                        </Link>
                         <Link to="/account" className="block py-2 hover:text-gold-400" onClick={() => setIsMenuOpen(false)}>My Account</Link>
                         <Link to="/cart" className="block py-2 hover:text-gold-400" onClick={() => setIsMenuOpen(false)}>Cart ({cartCount})</Link>
                     </div>
