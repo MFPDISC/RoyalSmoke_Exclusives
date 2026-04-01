@@ -824,7 +824,7 @@ const LoadingFallback = () => (
 function App() {
   return (
     <CartProvider>
-      <Router>
+      <Router basename={import.meta.env.BASE_URL}>
         <Suspense fallback={<LoadingFallback />}>
           <Routes>
             <Route path="/" element={<MainLayout />}>
