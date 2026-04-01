@@ -7,6 +7,17 @@ export const useCart = () => useContext(CartContext);
 
 export const CartProvider = ({ children }) => {
     const [cartItems, setCartItems] = useState([]);
+    const [promoCode, setPromoCode] = useState('');
+    const [promoDiscount, setPromoDiscount] = useState(0);
+
+    const applyPromoCode = (code) => {
+        if (code.toUpperCase() === 'ROYAL150') {
+            setPromoCode('ROYAL150');
+            setPromoDiscount(150);
+            return true;
+        }
+        return false;
+    };
 
     // Calculate cart totals
     const cartSubtotal = cartItems.reduce((sum, item) => {
@@ -19,7 +30,8 @@ export const CartProvider = ({ children }) => {
     const bulkDiscountThreshold = 2500;
     const bulkDiscountApplies = cartSubtotal >= bulkDiscountThreshold;
     const bulkDiscountAmount = bulkDiscountApplies ? cartSubtotal * 0.20 : 0;
-    const cartTotal = cartSubtotal - bulkDiscountAmount;
+    
+    const cartTotal = Math.max(0, cartSubtotal - bulkDiscountAmount - promoDiscount);
 
     // Load cart from local storage on init
     useEffect(() => {
@@ -104,6 +116,9 @@ export const CartProvider = ({ children }) => {
             cartCount,
             cartSubtotal,
             cartTotal,
+            promoCode,
+            promoDiscount,
+            applyPromoCode,
             bulkDiscountApplies,
             bulkDiscountAmount,
             bulkDiscountThreshold

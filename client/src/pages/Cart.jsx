@@ -1226,7 +1226,9 @@ const Cart = () => {
         );
     }
 
-    // Cart view (before checkout)
+    const [promoInput, setPromoInput] = useState('');
+    const { applyPromoCode, promoCode, promoDiscount } = useCart();
+
     return (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Cart Items */}
@@ -1315,11 +1317,48 @@ const Cart = () => {
                                 <span>- R {roundMoney(cartLines.reduce((a, l) => a + l.savings, 0)).toFixed(2)}</span>
                             </div>
                         )}
+                        {promoDiscount > 0 && (
+                            <div className="flex justify-between text-gold-400 font-bold border-t border-gray-800 pt-2 mt-2">
+                                <span>Discount ({promoCode})</span>
+                                <span>- R {promoDiscount.toFixed(2)}</span>
+                            </div>
+                        )}
                         <div className="flex justify-between text-xl font-extrabold text-white pt-3 border-t border-gray-700">
                             <span>Subtotal</span>
-                            <span>R {cartSubtotalEffective.toFixed(2)}</span>
+                            <span>R {Math.max(0, cartSubtotalEffective - promoDiscount).toFixed(2)}</span>
                         </div>
                     </div>
+
+                    {!promoCode ? (
+                        <div className="flex gap-2">
+                            <input
+                                placeholder="Discount Code"
+                                value={promoInput}
+                                onChange={(e) => setPromoInput(e.target.value)}
+                                className="flex-1 bg-dark-900 border border-gray-700 rounded-lg px-3 py-2 text-white text-sm outline-none focus:border-gold-500"
+                            />
+                            <button
+                                onClick={() => {
+                                    if (applyPromoCode(promoInput)) {
+                                        setPromoInput('');
+                                    } else {
+                                        alert('Invalid discount code');
+                                    }
+                                }}
+                                className="bg-dark-800 border border-gray-700 text-gold-500 px-4 py-2 rounded-lg text-sm font-bold hover:bg-dark-700 transition"
+                            >
+                                Apply
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="flex items-center justify-between bg-gold-500/10 border border-gold-500/20 rounded-lg px-3 py-2">
+                            <div className="flex items-center gap-2">
+                                <Gift size={14} className="text-gold-500" />
+                                <span className="text-gold-500 text-xs font-bold">{promoCode} Applied</span>
+                            </div>
+                            <span className="text-gold-500 text-xs font-bold">-R {promoDiscount}</span>
+                        </div>
+                    )}
 
                     <button
                         onClick={() => setStep(1)}

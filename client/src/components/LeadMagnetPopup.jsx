@@ -15,18 +15,20 @@ const LeadMagnetPopup = ({ onClose }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
+        const staticCode = 'ROYAL150';
         try {
-            const response = await axios.post(`${API}/leads`, {
+            await axios.post(`${API}/leads`, {
                 phone: formData.phone,
                 email: formData.email,
-                name: formData.email.split('@')[0] // Use email prefix as name
+                name: formData.email.split('@')[0]
             });
-
-            setCode(response.data.code);
+            setCode(staticCode);
             localStorage.setItem('royal_lead_captured', 'true');
         } catch (err) {
-            console.error('Lead capture failed:', err);
-            alert('Failed to generate code. Please try again.');
+            console.error('Lead capture failed, providing static code:', err);
+            // Even if API fails, give them the code as requested
+            setCode(staticCode);
+            localStorage.setItem('royal_lead_captured', 'true');
         } finally {
             setLoading(false);
         }
