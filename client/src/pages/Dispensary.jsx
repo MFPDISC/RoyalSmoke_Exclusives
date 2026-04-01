@@ -54,9 +54,9 @@ const Dispensary = () => {
                     <Leaf className="text-green-500" size={40} />
                 </div>
                 <div className="bg-dark-800 border border-white/5 rounded-3xl p-8 mb-8">
-                    <h2 className="text-xl font-bold text-white mb-2">Age Verification Required (18+)</h2>
+                    <h2 className="text-xl font-bold text-white mb-2">Age Verification Required (21+)</h2>
                     <p className="text-gray-400 mb-6 text-sm leading-relaxed">
-                        In accordance with South African regulatory guidelines, the Exotic Dispensary is strictly for adults aged 18 and older. 
+                        In accordance with South African regulatory guidelines, the Exotic Dispensary is strictly for adults aged 21 and older. 
                         <strong className="text-green-500 block mt-2">A valid ID must be presented to the courier upon delivery. No exceptions.</strong>
                     </p>
                     <div className="grid gap-4">
@@ -208,7 +208,7 @@ const Dispensary = () => {
                     <h4 className="text-white font-bold text-lg mb-1">Safe & Compliant Access</h4>
                     <p className="text-gray-400 text-sm leading-relaxed">
                         In accordance with South African law and regulatory guidelines, these products are provided within a private membership context for personal use only. 
-                        Access is strictly restricted to adults aged 18 and over. 
+                        Access is strictly restricted to adults aged 21 and over. 
                         <strong className="text-green-500"> A valid original ID must be presented to the courier upon delivery to verify age.</strong> No underage sales will occur.
                     </p>
                 </div>

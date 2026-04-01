@@ -676,7 +676,7 @@ const Cart = () => {
                     <div className="bg-dark-800 border-b border-gray-800 px-4 py-3 md:px-6 md:py-4">
                         <div className="max-w-4xl mx-auto flex items-center justify-between">
                             <div className="text-lg md:text-xl font-serif text-gold-400">RoyalSmoke Checkout</div>
-                            <div className="text-[10px] md:text-xs text-gray-400 font-bold uppercase tracking-widest border border-gray-700 px-2 py-1 rounded-md">ID Required (18+)</div>
+                            <div className="text-[10px] md:text-xs text-gray-400 font-bold uppercase tracking-widest border border-gray-700 px-2 py-1 rounded-md">ID Required (21+)</div>
                         </div>
                     </div>
 
@@ -746,7 +746,7 @@ const Cart = () => {
                                     {fieldStep === 2 && (
                                         <div className="space-y-4 md:space-y-6">
                                             <div>
-                                                <p className="text-sm md:text-base text-gray-400">Strictly for age verification (18+). <strong className="text-gold-500">A valid original ID must be presented upon delivery</strong> in accordance with regulatory guidelines.</p>
+                                                <p className="text-sm md:text-base text-gray-400">Strictly for age verification (21+). <strong className="text-gold-500">A valid original ID must be presented upon delivery</strong> in accordance with regulatory guidelines.</p>
                                             </div>
                                             <input
                                                 type="date"
@@ -1370,7 +1370,7 @@ const Cart = () => {
                     <div className="flex flex-col gap-3 text-xs text-gray-500 bg-dark-900 p-4 rounded-xl border border-white/5">
                         <div className="flex items-start gap-2">
                             <Shield className="text-green-500 mt-0.5 shrink-0" size={14} />
-                            <p className="text-gray-300 font-bold">18+ Age Verification Required</p>
+                            <p className="text-gray-300 font-bold">21+ Age Verification Required</p>
                         </div>
                         <div className="flex items-start gap-2">
                             <AlertCircle size={14} className="mt-0.5 shrink-0" />

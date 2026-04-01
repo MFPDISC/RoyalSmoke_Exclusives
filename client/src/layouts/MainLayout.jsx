@@ -95,7 +95,7 @@ const MainLayout = () => {
             <div className="fixed inset-0 bg-black z-50 flex items-center justify-center p-4">
                 <div className="bg-dark-800 border-2 border-gold-500 p-8 rounded-lg max-w-md w-full text-center">
                     <h1 className="text-3xl font-serif text-gold-500 mb-4">RoyalSmoke Exclusives</h1>
-                    <p className="text-gray-300 mb-8">Are you over the age of 18?</p>
+                    <p className="text-gray-300 mb-8">Are you over the age of 21?</p>
                     <div className="flex gap-4 justify-center">
                         <button
                             onClick={() => handleAgeVerify(true)}
@@ -189,7 +189,7 @@ const MainLayout = () => {
                         {/* Desktop Menu */}
                         <div className="hidden md:flex items-center space-x-8">
                             <Link to="/" className="hover:text-gold-400 transition">Home</Link>
-                            <Link to="/cigars" className="hover:text-gold-400 transition">Cigars</Link>
+                            <Link to="/cigars" className="hover:text-gold-400 transition">Collection</Link>
                             <Link to="/about" className="hover:text-gold-400 transition">About</Link>
                             <Link to="/dispensary" className="hover:text-green-500 transition-all flex items-center gap-2 group">
                                 <Leaf className="w-5 h-5 group-hover:fill-green-500/20" />
@@ -222,7 +222,7 @@ const MainLayout = () => {
                 {isMenuOpen && (
                     <div className="md:hidden bg-dark-800 px-4 py-2 border-t border-gray-700">
                         <Link to="/" className="block py-2 hover:text-gold-400" onClick={() => setIsMenuOpen(false)}>Home</Link>
-                        <Link to="/cigars" className="block py-2 hover:text-gold-400" onClick={() => setIsMenuOpen(false)}>Cigars</Link>
+                        <Link to="/cigars" className="block py-2 hover:text-gold-400" onClick={() => setIsMenuOpen(false)}>Collection</Link>
                         <Link to="/about" className="block py-2 hover:text-gold-400" onClick={() => setIsMenuOpen(false)}>About</Link>
                         <Link to="/dispensary" className="block py-2 text-green-500 font-bold flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
                             <Leaf size={18} />
@@ -249,7 +249,7 @@ const MainLayout = () => {
                         <Link className="hover:text-gray-300" to="/faq">FAQ</Link>
                         <Link className="hover:text-gray-300" to="/contact">Contact</Link>
                     </div>
-                    <p>&copy; {new Date().getFullYear()} RoyalSmoke Exclusives. 18+ Only.</p>
+                    <p>&copy; {new Date().getFullYear()} RoyalSmoke Exclusives. 21+ Only.</p>
                 </div>
             </footer>
         </div>

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, lazy, Suspense } from 'react';
 import axios from 'axios';
-import { BrowserRouter as Router, Routes, Route, Navigate, Link, useSearchParams } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, Link, useSearchParams, useNavigate } from 'react-router-dom';
 import MainLayout from './layouts/MainLayout';
 import { CartProvider, useCart } from './context/CartContext';
 import {
@@ -95,8 +95,8 @@ const Shipping = () => {
           <p>Most deliveries are dispatched fast. For some areas we support live tracking when available.</p>
         </div>
         <div>
-          <h2 className="text-xl font-semibold text-white mb-2">18+ only</h2>
-          <p>ID verification may be performed on delivery.</p>
+          <h2 className="text-xl font-semibold text-white mb-2">21+ only</h2>
+          <p>ID verification must be performed on delivery in accordance with regulatory guidelines.</p>
         </div>
       </div>
     </PageShell>

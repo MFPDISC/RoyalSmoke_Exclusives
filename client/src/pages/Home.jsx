@@ -640,7 +640,7 @@ const Home = () => {
                             <div>
                                 <h4 className="text-white font-bold text-base md:text-lg mb-1">Freshness & Regulatory Guarantee</h4>
                                 <p className="text-gray-400 text-sm leading-relaxed">
-                                    Cracked or unsmokable sticks replaced free. 18+ Adult use only. 
+                                    Cracked or unsmokable sticks replaced free. 21+ Adult use only. 
                                     <strong className="text-white font-bold"> ID must be presented upon delivery</strong> in accordance with South African regulatory guidelines.
                                 </p>
                             </div>

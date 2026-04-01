@@ -41,8 +41,8 @@ const Cigars = () => {
         <div className="max-w-7xl mx-auto px-4 md:px-0">
             {/* Header */}
             <div className="mb-8 text-center md:text-left">
-                <h1 className="text-3xl md:text-4xl font-serif font-bold text-white mb-2">Our Cigar Collection</h1>
-                <p className="text-gray-400">Handpicked premium cigars from the world's finest regions.</p>
+                <h1 className="text-3xl md:text-4xl font-serif font-bold text-white mb-2">The Royal Collection.</h1>
+                <p className="text-gray-400">Handpicked premium cigars and essentials for connoisseurs.</p>
             </div>
 
             {/* Product Grid */}

@@ -4,7 +4,7 @@ const path = require('path');
 const dbPath = path.resolve(__dirname, '../database/royalsmoke.db');
 const db = new Database(dbPath);
 
-console.log('Seeding Cannabis products with units...');
+console.log('Seeding Cannabis & Nicotine products with units...');
 
 const insert = db.prepare(`
     INSERT INTO products (name, description, price_zar, stock_qty, category, image_url, unit) 
@@ -74,15 +74,42 @@ const products = [
         category: 'PreRolls',
         image_url: null,
         unit: 'pack'
+    },
+    {
+        name: 'VELO Freeze Nicotine Pouches',
+        description: 'Extra strong nicotine pouches with a cooling mint sensation.',
+        price_zar: 110.00,
+        stock_qty: 500,
+        category: 'Nicotine Pouches',
+        image_url: null,
+        unit: 'can (20 pouches)'
+    },
+    {
+        name: 'VELO Polar Mint',
+        description: 'Classic mint flavor. Smooth and refreshing nicotine hit.',
+        price_zar: 110.00,
+        stock_qty: 500,
+        category: 'Nicotine Pouches',
+        image_url: null,
+        unit: 'can (20 pouches)'
+    },
+    {
+        name: 'ZYN Cool Mint - 6mg',
+        description: 'Premium tobacco-free nicotine pouches. Discrete and clean.',
+        price_zar: 140.00,
+        stock_qty: 200,
+        category: 'Nicotine Pouches',
+        image_url: null,
+        unit: 'can'
     }
 ];
 
-const deleteOld = db.prepare("DELETE FROM products WHERE category IN ('Flower', 'Vapes', 'PreRolls', 'Cannabis')");
+const deleteOld = db.prepare("DELETE FROM products WHERE category IN ('Flower', 'Vapes', 'PreRolls', 'Nicotine Pouches', 'Cannabis')");
 deleteOld.run();
 
 for (const p of products) {
     insert.run(p);
 }
 
-console.log(`Successfully seeded ${products.length} Cannabis products with updated PreRoll pricing.`);
+console.log(`Successfully seeded ${products.length} products with Nicotine Pouches & corrected prices.`);
 db.close();
