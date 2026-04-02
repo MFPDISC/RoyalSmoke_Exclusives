@@ -16,12 +16,12 @@ const Dispensary = () => {
     const navigate = useNavigate();
 
     const MOCK_CANNABIS = [
-        { id: 'c1', name: 'Greendoor Indica', category: 'Flower', type: 'Indica', thc: '18%', price_zar: 55, unit: 'per g', effects: ['Relaxed', 'Smooth'], description: 'Premium local indoor-grown Indica. Relaxing, smooth, and perfect for evening use.' },
-        { id: 'c2', name: 'Primo Haze', category: 'Flower', type: 'Sativa', thc: '23%', price_zar: 120, unit: 'per g', effects: ['Energetic', 'Creative'], description: 'Top-shelf export quality Sativa. Energetic, potent, and crystal-rich.' },
-        { id: 'c3', name: 'Royal Gold Distillate', category: 'Vapes', type: 'Sativa', thc: '95%', price_zar: 500, unit: '1g Cart', effects: ['Focused', 'Uplifted'], description: '95% Pure THC Distillate with organic terpenes. Discrete and powerful.' },
-        { id: 'c4', name: 'Greendoor Pre-Roll', category: 'PreRolls', type: 'Indica', thc: '18%', price_zar: 50, unit: 'Single PR', effects: ['Smooth', 'Mellow'], description: 'Hand-rolled Greendoor flower. Smooth, consistent, and convenient.' },
-        { id: 'c7', name: 'Greendoor Bulk PR', category: 'PreRolls', type: 'Indica', thc: '18%', price_zar: 240, unit: 'Pack of 5', effects: ['Social', 'Balanced'], description: 'Excellent value daily-driver pack of our famous Greendoor flower.' },
-        { id: 'c8', name: 'Blue Dream Reserve', category: 'Flower', type: 'Hybrid', thc: '22%', price_zar: 140, unit: 'per g', effects: ['Balanced', 'Creative'], description: 'The connoisseur choice. Sweet berry aroma with a smooth finish.' }
+        { id: 'c1', name: 'Greendoor Indica', category: 'Flower', type: 'Indica', thc: '18%', price_zar: 55, unit: 'per g', effects: ['Relaxed', 'Smooth'], description: 'Premium local indoor-grown Indica. Relaxing, smooth, and perfect for evening use.', image_url: 'https://images.unsplash.com/photo-1596541223130-5d56a74bedf0?auto=format&fit=crop&q=80&w=800' },
+        { id: 'c2', name: 'Primo Haze', category: 'Flower', type: 'Sativa', thc: '23%', price_zar: 120, unit: 'per g', effects: ['Energetic', 'Creative'], description: 'Top-shelf export quality Sativa. Energetic, potent, and crystal-rich.', image_url: 'https://images.unsplash.com/photo-1603909223429-69bb7101f420?auto=format&fit=crop&q=80&w=800' },
+        { id: 'c3', name: 'Royal Gold Distillate', category: 'Vapes', type: 'Sativa', thc: '95%', price_zar: 500, unit: '1g Cart', effects: ['Focused', 'Uplifted'], description: '95% Pure THC Distillate with organic terpenes. Discrete and powerful.', image_url: 'https://images.unsplash.com/photo-1572916744888-eb8fd613d5df?auto=format&fit=crop&q=80&w=800' },
+        { id: 'c4', name: 'Greendoor Pre-Roll', category: 'PreRolls', type: 'Indica', thc: '18%', price_zar: 50, unit: 'Single PR', effects: ['Smooth', 'Mellow'], description: 'Hand-rolled Greendoor flower. Smooth, consistent, and convenient.', image_url: 'https://images.unsplash.com/photo-1600003014755-ba31aa59c4b6?auto=format&fit=crop&q=80&w=800' },
+        { id: 'c7', name: 'Greendoor Bulk PR', category: 'PreRolls', type: 'Indica', thc: '18%', price_zar: 240, unit: 'Pack of 5', effects: ['Social', 'Balanced'], description: 'Excellent value daily-driver pack of our famous Greendoor flower.', image_url: 'https://images.unsplash.com/photo-1590089851680-6bc50b321c17?auto=format&fit=crop&q=80&w=800' },
+        { id: 'c8', name: 'Blue Dream Reserve', category: 'Flower', type: 'Hybrid', thc: '22%', price_zar: 140, unit: 'per g', effects: ['Balanced', 'Creative'], description: 'The connoisseur choice. Sweet berry aroma with a smooth finish.', image_url: 'https://images.unsplash.com/photo-1606579294200-a6190895392e?auto=format&fit=crop&q=80&w=800' }
     ];
 
     useEffect(() => {
