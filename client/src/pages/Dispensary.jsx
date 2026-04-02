@@ -20,8 +20,6 @@ const Dispensary = () => {
         { id: 'c2', name: 'Primo Haze', category: 'Flower', type: 'Sativa', thc: '23%', price_zar: 120, unit: 'per g', effects: ['Energetic', 'Creative'], description: 'Top-shelf export quality Sativa. Energetic, potent, and crystal-rich.' },
         { id: 'c3', name: 'Royal Gold Distillate', category: 'Vapes', type: 'Sativa', thc: '95%', price_zar: 500, unit: '1g Cart', effects: ['Focused', 'Uplifted'], description: '95% Pure THC Distillate with organic terpenes. Discrete and powerful.' },
         { id: 'c4', name: 'Greendoor Pre-Roll', category: 'PreRolls', type: 'Indica', thc: '18%', price_zar: 50, unit: 'Single PR', effects: ['Smooth', 'Mellow'], description: 'Hand-rolled Greendoor flower. Smooth, consistent, and convenient.' },
-        { id: 'c5', name: 'VELO Freeze', category: 'Nicotine', type: 'Extra Strong', thc: '0%', price_zar: 110, unit: 'Can (20 pouches)', effects: ['Focused', 'Icy'], description: 'Extra strong nicotine pouches with a cooling mint sensation.' },
-        { id: 'c6', name: 'ZYN Cool Mint 6mg', category: 'Nicotine', type: 'Strong', thc: '0%', price_zar: 140, unit: 'Can (15 pouches)', effects: ['Clean', 'Sharp'], description: 'Premium tobacco-free nicotine pouches. Discrete and clean.' },
         { id: 'c7', name: 'Greendoor Bulk PR', category: 'PreRolls', type: 'Indica', thc: '18%', price_zar: 240, unit: 'Pack of 5', effects: ['Social', 'Balanced'], description: 'Excellent value daily-driver pack of our famous Greendoor flower.' },
         { id: 'c8', name: 'Blue Dream Reserve', category: 'Flower', type: 'Hybrid', thc: '22%', price_zar: 140, unit: 'per g', effects: ['Balanced', 'Creative'], description: 'The connoisseur choice. Sweet berry aroma with a smooth finish.' }
     ];
@@ -46,7 +44,7 @@ const Dispensary = () => {
                 <div className="bg-dark-800 border border-white/5 rounded-3xl p-10 shadow-2xl">
                     <h2 className="text-3xl font-serif text-white mb-4">The Boutique Dispensary</h2>
                     <p className="text-gray-400 mb-8 text-sm leading-relaxed">
-                        Access to our curated cannabis and nicotine selection is strictly for verified members aged 21 and over. 
+                        Access to our curated cannabis selection is strictly for verified members aged 21 and over. 
                         Join the RoyalSmoke community to browse our boutique menu.
                     </p>
                     <div className="grid gap-4">
@@ -68,8 +66,8 @@ const Dispensary = () => {
         );
     }
 
-    const categories = ['All', 'Flower', 'Vapes', 'PreRolls', 'Nicotine'];
-    const effects = ['All', 'Relaxed', 'Energetic', 'Focused', 'Happy', 'Euphoric', 'Icy'];
+    const categories = ['All', 'Flower', 'Vapes', 'PreRolls'];
+    const effects = ['All', 'Relaxed', 'Energetic', 'Focused', 'Happy', 'Euphoric'];
 
     const filtered = products.filter(p => {
         const matchesCategory = activeTab === 'All' || p.category === activeTab;
