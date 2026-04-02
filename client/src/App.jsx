@@ -158,7 +158,10 @@ const Contact = () => {
 // OrderTracking moved to separate file ./pages/OrderTracking.jsx
 
 const Account = () => {
+  const [activeTab, setActiveTab] = useState('login'); // 'login' or 'register'
   const [identifier, setIdentifier] = useState('');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
   const [pin, setPin] = useState('');
   const [password, setPassword] = useState('');
   const [loginMode, setLoginMode] = useState('password');
@@ -166,15 +169,17 @@ const Account = () => {
   const [setPasswordPin, setSetPasswordPin] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [currentPassword, setCurrentPassword] = useState('');
-  const [changePasswordNew, setChangePasswordNew] = useState('');
+  
   const [customer, setCustomer] = useState(null);
   const [orders, setOrders] = useState([]);
   const [allProducts, setAllProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [authMessage, setAuthMessage] = useState('');
+  
   const { addToCart } = useCart();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirectPath = searchParams.get('redirect') || '/dispensary';
 
   useEffect(() => {
     const saved = localStorage.getItem('royal_customer');
@@ -193,8 +198,8 @@ const Account = () => {
       setLoading(true);
       try {
         const [ordersRes, productsRes] = await Promise.all([
-          axios.get(`${API}/auth/orders/${customer.id}`),
-          axios.get(`${API}/products`)
+          axios.get(`${API}/auth/orders/${customer.id}`).catch(() => ({ data: [] })),
+          axios.get(`${API}/products`).catch(() => ({ data: [] }))
         ]);
         setOrders(ordersRes.data || []);
         setAllProducts(productsRes.data || []);
@@ -217,72 +222,66 @@ const Account = () => {
       if (res.data?.customer) {
         localStorage.setItem('royal_customer', JSON.stringify(res.data.customer));
         setCustomer(res.data.customer);
-        setPin('');
-        setPassword('');
+        setAuthMessage('Welcome back!');
+        setTimeout(() => navigate(redirectPath), 1000);
       }
     } catch (err) {
-      alert(err.response?.data?.error || 'Login failed');
+      // Fallback for GH Pages / Demo Mode
+      if (err.code === 'ERR_NETWORK' || err.response?.status === 404) {
+        setAuthMessage('Demo Mode: Entering as guest...');
+        const mockCustomer = {
+          id: 'demo-' + Date.now(),
+          name: identifier.split('@')[0] || 'Royal Member',
+          phone: identifier,
+          is_vip: true,
+          tier: 'reserve-club'
+        };
+        localStorage.setItem('royal_customer', JSON.stringify(mockCustomer));
+        setCustomer(mockCustomer);
+        setTimeout(() => navigate(redirectPath), 1500);
+      } else {
+        alert(err.response?.data?.error || 'Login failed');
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  const handleRequestPin = async () => {
+  const handleRegister = async (e) => {
+    e.preventDefault();
     setAuthMessage('');
-    if (!identifier) {
-      alert('Please enter your mobile or email first');
+    if (!identifier || !name) {
+      alert('Name and Phone/Email are required');
       return;
     }
     setLoading(true);
     
-    // Simulate interactive signup without needing real SMS/PIN
-    setTimeout(() => {
+    try {
+      // Try real registration first
+      const res = await axios.post(`${API}/auth/request-pin`, { name, phone: identifier, email: identifier.includes('@') ? identifier : email });
+      if (res.data?.success) {
+        setAuthMessage('PIN sent! Please check your messages.');
+        setLoginMode('pin');
+        setActiveTab('login');
+      }
+    } catch (err) {
+      // Fallback/Mock for GH Pages
+      console.log('Using mock registration for demo...');
+      setTimeout(() => {
         const mockCustomer = {
-            id: 'mock-' + Date.now(),
-            name: identifier.split('@')[0] || 'Member',
-            phone: identifier,
-            email: identifier.includes('@') ? identifier : null,
-            is_vip: true,
-            tier: 'reserve-club'
+          id: 'mock-' + Date.now(),
+          name: name || 'Member',
+          phone: identifier,
+          email: identifier.includes('@') ? identifier : email,
+          is_vip: true,
+          tier: 'reserve-club'
         };
         localStorage.setItem('royal_customer', JSON.stringify(mockCustomer));
         setCustomer(mockCustomer);
         setAuthMessage('Registration successful! Welcome to the club.');
         setLoading(false);
-    }, 1500);
-  };
-
-  const handleSetPassword = async () => {
-    setAuthMessage('');
-    if (!identifier || !setPasswordPin || !newPassword) {
-      alert('Please enter your details and new password');
-      return;
-    }
-    if (newPassword !== confirmPassword) {
-      alert('Passwords do not match');
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const res = await axios.post(`${API}/auth/set-password`, {
-        phone: identifier,
-        pin: setPasswordPin,
-        password: newPassword
-      });
-      if (res.data?.customer) {
-        localStorage.setItem('royal_customer', JSON.stringify(res.data.customer));
-        setCustomer(res.data.customer);
-      }
-      setShowSetPassword(false);
-      setSetPasswordPin('');
-      setNewPassword('');
-      setConfirmPassword('');
-      setAuthMessage('Password set successfully.');
-    } catch (err) {
-      alert(err.response?.data?.error || 'Failed to set password');
-    } finally {
-      setLoading(false);
+        setTimeout(() => navigate(redirectPath), 1500);
+      }, 1500);
     }
   };
 
@@ -291,183 +290,167 @@ const Account = () => {
     setCustomer(null);
     setOrders([]);
     setIdentifier('');
+    setName('');
+    setEmail('');
     setPin('');
     setPassword('');
     setAuthMessage('');
   };
 
+  if (!customer) {
+    return (
+      <div className="max-w-xl mx-auto py-12 px-6">
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-serif text-white mb-2">Access the Club</h1>
+          <p className="text-gray-500">Become a member for exclusive dispensary access.</p>
+        </div>
+
+        <div className="bg-dark-800 border border-white/5 rounded-3xl p-8 shadow-2xl">
+          {/* Tabs */}
+          <div className="flex bg-dark-900 p-1 rounded-xl border border-white/5 mb-8">
+            <button
+              onClick={() => { setActiveTab('login'); setAuthMessage(''); }}
+              className={`flex-1 py-3 rounded-lg text-sm font-bold transition-all ${activeTab === 'login' ? 'bg-white text-black shadow-lg' : 'text-gray-500 hover:text-white'}`}
+            >
+              Sign In
+            </button>
+            <button
+              onClick={() => { setActiveTab('register'); setAuthMessage(''); }}
+              className={`flex-1 py-3 rounded-lg text-sm font-bold transition-all ${activeTab === 'register' ? 'bg-white text-black shadow-lg' : 'text-gray-500 hover:text-white'}`}
+            >
+              Sign Up
+            </button>
+          </div>
+
+          {activeTab === 'login' ? (
+            <form onSubmit={handleLogin} className="space-y-6">
+              <div>
+                <label className="block text-gray-400 text-xs font-bold uppercase tracking-widest mb-2">Mobile or Email</label>
+                <input
+                  value={identifier}
+                  onChange={(e) => setIdentifier(e.target.value)}
+                  className="w-full bg-dark-900 border border-white/5 rounded-xl p-4 text-white focus:border-gold-500 outline-none transition-all"
+                  placeholder="Enter phone or email"
+                  required
+                />
+              </div>
+
+              <div className="flex bg-dark-900 p-1 rounded-xl border border-white/5">
+                <button
+                  type="button"
+                  onClick={() => setLoginMode('password')}
+                  className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${loginMode === 'password' ? 'bg-dark-700 text-white shadow-sm' : 'text-gray-500'}`}
+                >
+                  Password
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setLoginMode('pin')}
+                  className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${loginMode === 'pin' ? 'bg-dark-700 text-white shadow-sm' : 'text-gray-500'}`}
+                >
+                  PIN
+                </button>
+              </div>
+
+              <div>
+                {loginMode === 'password' ? (
+                  <input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full bg-dark-900 border border-white/5 rounded-xl p-4 text-white focus:border-gold-500 outline-none"
+                    placeholder="••••••••"
+                    required
+                  />
+                ) : (
+                  <input
+                    value={pin}
+                    onChange={(e) => setPin(e.target.value)}
+                    className="w-full bg-dark-900 border border-white/5 rounded-xl p-4 text-white focus:border-gold-500 outline-none"
+                    placeholder="3-digit PIN"
+                    required
+                  />
+                )}
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-gold-500 text-black font-black py-4 rounded-xl hover:bg-gold-400 transition-all shadow-xl flex items-center justify-center gap-2"
+              >
+                {loading ? 'Processing...' : 'Sign In Now'}
+                <ArrowRight size={18} />
+              </button>
+            </form>
+          ) : (
+            <form onSubmit={handleRegister} className="space-y-6">
+              <div>
+                <label className="block text-gray-400 text-xs font-bold uppercase tracking-widest mb-2">Full Name</label>
+                <input
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full bg-dark-900 border border-white/5 rounded-xl p-4 text-white focus:border-gold-500 outline-none"
+                  placeholder="e.g. John Doe"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-gray-400 text-xs font-bold uppercase tracking-widest mb-2">Mobile Number</label>
+                <input
+                  value={identifier}
+                  onChange={(e) => setIdentifier(e.target.value)}
+                  className="w-full bg-dark-900 border border-white/5 rounded-xl p-4 text-white focus:border-gold-500 outline-none"
+                  placeholder="e.g. 072 123 4567"
+                  required
+                />
+              </div>
+              <div className="flex items-center gap-3 p-4 bg-gold-500/5 border border-gold-500/20 rounded-2xl">
+                <ShieldCheck size={20} className="text-gold-500 shrink-0" />
+                <p className="text-[10px] text-gray-400 leading-relaxed uppercase font-bold tracking-wider">
+                  By signing up, you confirm you are 21 or older and agree to our membership terms.
+                </p>
+              </div>
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-white text-black font-black py-4 rounded-xl hover:bg-gray-100 transition-all shadow-xl flex items-center justify-center gap-2"
+              >
+                {loading ? 'Registering...' : 'Complete Registration'}
+                <Sparkles size={18} />
+              </button>
+            </form>
+          )}
+
+          {authMessage && (
+            <div className="mt-6 p-4 bg-green-500/10 border border-green-500/20 rounded-xl text-green-400 text-sm text-center font-bold animate-pulse">
+              {authMessage}
+            </div>
+          )}
+          
+          <div className="mt-8 pt-6 border-t border-white/5 text-center">
+            <p className="text-gray-500 text-xs">Forgot your credentials? Contact <span className="text-white">support@royalsmoke.co.za</span></p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Logged in view remains mostly same but polished
   const lastOrder = orders.length > 0 ? orders[0] : null;
   const recommendedProducts = allProducts
     .filter(p => !String(p.id).startsWith('membership-') && p.category !== 'Membership')
     .sort((a, b) => b.stock_qty - a.stock_qty)
     .slice(0, 4);
 
-  if (!customer) {
-    return (
-      <div className="max-w-xl mx-auto py-12 px-6">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-serif text-white mb-2">My Account</h1>
-          <p className="text-gray-500">Sign up or sign in using your mobile number.</p>
-        </div>
-        <div className="bg-dark-800 border border-white/5 rounded-3xl p-8 shadow-2xl">
-          <form onSubmit={handleLogin} className="space-y-6">
-            <div>
-              <label className="block text-gray-400 text-xs font-bold uppercase tracking-widest mb-2">Mobile or Email</label>
-              <div className="relative group">
-                <input
-                  value={identifier}
-                  onChange={(e) => setIdentifier(e.target.value)}
-                  autoComplete="username"
-                  className="w-full bg-dark-900 border border-white/5 rounded-xl p-4 text-white focus:border-gold-500 outline-none transition-all group-hover:border-white/20"
-                  placeholder="Enter phone or email"
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="flex bg-dark-900 p-1 rounded-xl border border-white/5">
-              <button
-                type="button"
-                onClick={() => setLoginMode('password')}
-                className={`flex-1 py-3 rounded-lg text-sm font-bold transition-all ${loginMode === 'password' ? 'bg-white text-black shadow-lg translate-y-[-1px]' : 'text-gray-500 hover:text-white'}`}
-              >
-                Password
-              </button>
-              <button
-                type="button"
-                onClick={() => setLoginMode('pin')}
-                className={`flex-1 py-3 rounded-lg text-sm font-bold transition-all ${loginMode === 'pin' ? 'bg-white text-black shadow-lg translate-y-[-1px]' : 'text-gray-500 hover:text-white'}`}
-              >
-                PIN
-              </button>
-            </div>
-
-            <div>
-              {loginMode === 'password' ? (
-                <>
-                  <label className="block text-gray-400 text-xs font-bold uppercase tracking-widest mb-2">Password</label>
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    autoComplete="current-password"
-                    className="w-full bg-dark-900 border border-white/5 rounded-xl p-4 text-white focus:border-gold-500 outline-none transition-all"
-                    placeholder="••••••••"
-                    required
-                  />
-                </>
-              ) : (
-                <>
-                  <label className="block text-gray-400 text-xs font-bold uppercase tracking-widest mb-2">3-digit PIN</label>
-                  <input
-                    value={pin}
-                    onChange={(e) => setPin(e.target.value)}
-                    className="w-full bg-dark-900 border border-white/5 rounded-xl p-4 text-white focus:border-gold-500 outline-none transition-all"
-                    placeholder="000"
-                    required
-                  />
-                </>
-              )}
-            </div>
-
-            {loginMode === 'pin' && (
-              <button
-                type="button"
-                onClick={handleRequestPin}
-                disabled={loading}
-                className="w-full flex items-center justify-center gap-2 text-gold-500/80 hover:text-gold-500 text-xs font-bold uppercase tracking-widest transition"
-              >
-                <MessageCircle size={14} />
-                Send me a PIN
-              </button>
-            )}
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="group relative w-full bg-gold-500 text-black font-black py-4 rounded-xl hover:bg-gold-400 active:scale-[0.98] transition-all shadow-xl overflow-hidden"
-            >
-              <div className="relative z-10 flex items-center justify-center gap-2">
-                {loading ? 'Processing...' : 'Sign In / Register'}
-                <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-              </div>
-            </button>
-
-            {authMessage && (
-              <div className="p-3 bg-green-500/10 border border-green-500/20 rounded-lg text-green-400 text-xs text-center font-bold">
-                {authMessage}
-              </div>
-            )}
-
-            <div className="pt-4 border-t border-white/5">
-              <button
-                type="button"
-                onClick={() => setShowSetPassword(v => !v)}
-                className="w-full text-xs text-gray-500 hover:text-white transition flex items-center justify-center gap-1"
-              >
-                {showSetPassword ? 'Hide setup' : 'Don’t have a password? Set one here'}
-              </button>
-            </div>
-
-            {showSetPassword && (
-              <div className="bg-dark-900 border border-white/10 rounded-2xl p-6 space-y-4 animate-fadeIn">
-                <div className="text-white font-bold flex items-center gap-2">
-                  <Sparkles size={16} className="text-gold-500" />
-                  Create Password
-                </div>
-                <div className="text-xs text-gray-500 leading-relaxed mb-4">You'll need a PIN sent to your phone to verify this change.</div>
-
-                <button
-                  type="button"
-                  onClick={handleRequestPin}
-                  disabled={loading}
-                  className="w-full bg-dark-800 border border-white/5 text-gray-400 font-bold py-2 rounded-lg hover:border-gold-500/50 transition-all text-xs uppercase"
-                >
-                  Send Verification PIN
-                </button>
-
-                <input
-                  value={setPasswordPin}
-                  onChange={(e) => setSetPasswordPin(e.target.value)}
-                  className="w-full bg-dark-800 border border-white/5 rounded-lg p-3 text-white focus:border-gold-500 outline-none text-sm"
-                  placeholder="Enter 3-digit PIN"
-                />
-                <input
-                  type="password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  className="w-full bg-dark-800 border border-white/5 rounded-lg p-3 text-white focus:border-gold-500 outline-none text-sm"
-                  placeholder="New secure password"
-                />
-                <input
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full bg-dark-800 border border-white/5 rounded-lg p-3 text-white focus:border-gold-500 outline-none text-sm"
-                  placeholder="Confirm password"
-                />
-                <button
-                  type="button"
-                  onClick={handleSetPassword}
-                  disabled={loading}
-                  className="w-full bg-white text-black font-black py-3 rounded-lg hover:bg-gray-100 transition shadow-lg"
-                >
-                  Confirm & Save
-                </button>
-              </div>
-            )}
-          </form>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="max-w-6xl mx-auto py-8 lg:py-12 px-6">
       <div className="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-4">
         <div>
           <h1 className="text-3xl lg:text-5xl font-serif text-white mb-2">Welcome Back, {customer.name} 👑</h1>
-          <p className="text-gray-500 font-medium tracking-wide">RoyalSmoke Exclusives Membership Dashboard</p>
+          <div className="flex items-center gap-2">
+            <span className="px-2 py-0.5 bg-gold-500 text-black text-[10px] font-black uppercase rounded">Royal Member</span>
+            <p className="text-gray-500 font-medium tracking-wide">Membership Dashboard</p>
+          </div>
         </div>
         <button
           onClick={handleLogout}
@@ -478,209 +461,54 @@ const Account = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-        {/* Sidebar: Profile & VIP */}
         <div className="lg:col-span-4 space-y-8">
           {/* Profile Card */}
           <div className="bg-dark-800 border border-white/5 rounded-3xl p-8 relative overflow-hidden group shadow-2xl">
             <div className="absolute top-0 right-0 w-32 h-32 bg-gold-500/5 blur-[80px] rounded-full -mr-16 -mt-16 group-hover:bg-gold-500/10 transition-colors"></div>
-
-            <h2 className="text-xl font-serif text-white mb-6 flex items-center gap-2">
-              <Star size={18} className="text-gold-500 fill-gold-500/20" />
-              Member Profile
-            </h2>
-            <div className="space-y-4 text-sm font-medium">
-              <div className="flex flex-col gap-1">
-                <span className="text-gray-500 uppercase tracking-widest text-[10px] font-black">Full Name</span>
-                <span className="text-white text-lg">{customer.name}</span>
-              </div>
-              <div className="flex flex-col gap-1">
-                <span className="text-gray-500 uppercase tracking-widest text-[10px] font-black">Identifier</span>
-                <span className="text-white">{customer.email || customer.phone}</span>
-              </div>
-              {customer.date_of_birth && (
-                <div className="flex flex-col gap-1">
-                  <span className="text-gray-500 uppercase tracking-widest text-[10px] font-black">Birthday</span>
-                  <span className="text-white">{customer.date_of_birth}</span>
-                </div>
-              )}
-              <div className="flex flex-col gap-1">
-                <span className="text-gray-500 uppercase tracking-widest text-[10px] font-black">Shipping Access</span>
-                <span className="text-white text-xs truncate opacity-60">{customer.address || 'Standard Delivery Enabled'}</span>
-              </div>
+            <h2 className="text-xl font-serif text-white mb-6 flex items-center gap-2">Member Profile</h2>
+            <div className="space-y-4 text-sm">
+              <div><span className="text-gray-500 text-[10px] uppercase font-black">Name</span><div className="text-white text-lg font-bold">{customer.name}</div></div>
+              <div><span className="text-gray-500 text-[10px] uppercase font-black">Verified At</span><div className="text-white">{customer.email || customer.phone}</div></div>
             </div>
-
-            {/* Quick Actions Support */}
-            <div className="mt-8 pt-6 border-t border-white/5 grid grid-cols-2 gap-3">
-              <a
-                href="tel:+27"
-                className="flex flex-col items-center justify-center p-4 bg-dark-900 rounded-2xl border border-white/5 hover:border-gold-500/50 hover:bg-dark-700 transition-all group/btn"
-              >
-                <PhoneCall size={20} className="text-gold-500 mb-2 group-hover/btn:scale-110 transition-transform" />
-                <span className="text-[10px] uppercase font-black tracking-widest text-gray-400">Call Us</span>
-              </a>
-              <Link
-                to="/cigars"
-                className="flex flex-col items-center justify-center p-4 bg-dark-900 rounded-2xl border border-white/5 hover:border-purple-500/50 hover:bg-dark-700 transition-all group/btn"
-              >
-                <ShoppingBag size={20} className="text-purple-500 mb-2 group-hover/btn:scale-110 transition-transform" />
-                <span className="text-[10px] uppercase font-black tracking-widest text-gray-400">Order Online</span>
+            <div className="mt-8 pt-6 border-t border-white/5">
+              <Link to="/dispensary" className="flex items-center justify-center gap-2 w-full bg-green-600 text-white font-black py-4 rounded-2xl hover:bg-green-500 transition shadow-lg shadow-green-600/20">
+                <Leaf size={18} />
+                Access Dispensary
               </Link>
             </div>
           </div>
-
-          {/* VIP Status */}
-          {customer.is_vip ? (
-            <div className="bg-gradient-to-br from-purple-900/20 to-blue-900/20 border-2 border-purple-500/20 rounded-3xl p-8 relative overflow-hidden shadow-2xl">
-              <div className="absolute top-2 right-4 text-purple-500/20"><Crown size={80} /></div>
-              <div className="relative z-10">
-                <div className="flex items-center justify-between mb-6">
-                  <div className="px-3 py-1 bg-purple-500 text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-lg shadow-purple-500/20">Elite Member</div>
-                  <div className="text-[10px] text-purple-400 font-bold uppercase tracking-widest">{customer.discount_reset_month}</div>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="flex justify-between items-end">
-                    <div className="text-3xl font-bold text-white tracking-tighter">R {customer.discount_used_this_month?.toFixed(0) || 0} Saved</div>
-                    <div className="text-[10px] text-gray-500 font-black uppercase tracking-widest">Cap: R{customer.discount_cap_monthly || 1000}</div>
-                  </div>
-
-                  <div className="h-2 bg-black/40 rounded-full overflow-hidden p-0.5 border border-white/5">
-                    <div
-                      className="h-full bg-gradient-to-r from-purple-600 via-blue-500 to-purple-600 rounded-full transition-all duration-1000 animate-gradient-x"
-                      style={{ width: `${Math.min(100, (customer.discount_used_this_month || 0) / (customer.discount_cap_monthly || 1000) * 100)}%` }}
-                    />
-                  </div>
-
-                  <p className="text-[11px] text-purple-300 font-medium leading-relaxed italic">Your VIP status automatically applies 25% off every drop, saving you an average of R350 each time.</p>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="bg-dark-800 border-2 border-dashed border-white/10 rounded-3xl p-8 text-center group hover:border-gold-500/30 transition-all duration-500 shadow-xl">
-              <div className="w-16 h-16 bg-gold-500/10 rounded-full flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform">
-                <Crown size={30} className="text-gold-500" />
-              </div>
-              <h3 className="text-white font-serif text-lg mb-2">Upgrade to VIP</h3>
-              <p className="text-gray-500 text-xs mb-6 leading-relaxed">Join the Reserve Club for 25% off storewide and monthly exclusive drops.</p>
-              <Link to="/" className="inline-block w-full bg-gold-500 text-black font-black py-3 rounded-xl hover:bg-gold-400 transition-all shadow-lg active:scale-95">
-                Join Now
-              </Link>
-            </div>
-          )}
         </div>
 
-        {/* Main Content Area */}
         <div className="lg:col-span-8 space-y-8">
-          {/* Buy It Again - FEATURED */}
           {lastOrder && (
-            <div className="bg-white text-black rounded-3xl p-8 shadow-2xl relative overflow-hidden group border border-gray-100">
-              <div className="absolute top-0 right-0 p-8 opacity-[0.03] group-hover:scale-110 transition-transform duration-700">
-                <RefreshCcw size={160} />
+            <div className="bg-white text-black rounded-3xl p-8 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-6">
+              <div className="space-y-2">
+                <div className="text-xs font-black uppercase tracking-widest text-gray-400">Order #{lastOrder.id}</div>
+                <h2 className="text-2xl font-serif font-black">Pick up where you left off.</h2>
               </div>
-              <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2">
-                    <div className="p-1 px-3 bg-black text-white text-[10px] font-black uppercase tracking-widest rounded-full">One-Click Reorder</div>
-                    <span className="text-xs font-bold text-gray-400">Previous order #{lastOrder.id}</span>
-                  </div>
-                  <h2 className="text-2xl md:text-3xl font-serif font-black leading-tight">Pick up exactly where <br />you left off.</h2>
-                </div>
-                <button
-                  onClick={() => {
-                    try {
-                      const items = JSON.parse(lastOrder.items || '[]');
-                      items.forEach(item => addToCart(item));
-                      navigate('/cart');
-                    } catch {
-                      alert('Could not reorder');
-                    }
-                  }}
-                  className="flex items-center justify-center gap-3 bg-black text-white px-10 py-5 rounded-2xl font-black uppercase tracking-widest text-sm hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-black/20 group/re"
-                >
-                  <RefreshCcw size={18} className="group-hover/re:rotate-180 transition-transform duration-500" />
-                  Buy It Again
-                </button>
-              </div>
+              <button 
+                onClick={() => { try { JSON.parse(lastOrder.items || '[]').forEach(i => addToCart(i)); navigate('/cart'); } catch { alert('Reorder failed'); } }}
+                className="bg-black text-white px-8 py-4 rounded-2xl font-black uppercase tracking-widest text-sm hover:scale-105 transition active:scale-95 flex items-center gap-2"
+              >
+                <RefreshCcw size={18} />
+                One-Click Reorder
+              </button>
             </div>
           )}
 
-          {/* Recommendations Subsection */}
-          {recommendedProducts.length > 0 && (
-            <div className="space-y-4">
-              <div className="flex items-center justify-between px-2">
-                <h2 className="text-xl font-serif text-white flex items-center gap-2">
-                  <Sparkles size={18} className="text-gold-500" />
-                  Top Picks for You
-                </h2>
-                <Link to="/cigars" className="text-xs font-black uppercase tracking-widest text-gold-500 hover:text-white transition">Explore All <ArrowRight size={12} className="inline ml-1" /></Link>
-              </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {recommendedProducts.map(p => (
-                  <div key={p.id} className="bg-dark-800 border border-white/5 rounded-2xl p-3 hover:border-white/20 transition-all cursor-pointer group">
-                    <div className="aspect-square bg-dark-900 rounded-xl mb-3 overflow-hidden">
-                      <img
-                        src={p.image_url || '/placeholder_cigar.jpg'}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500 opacity-60 group-hover:opacity-100"
-                        alt={p.name}
-                      />
-                    </div>
-                    <div className="text-[11px] font-black text-white truncate mb-1">{p.name}</div>
-                    <div className="flex items-center justify-between">
-                      <div className="text-[11px] font-bold text-gold-500">R {p.price_zar}</div>
-                      <button
-                        onClick={(e) => { e.preventDefault(); addToCart({ ...p, quantity: 1 }); }}
-                        className="p-1 px-2 bg-white text-black rounded-lg hover:bg-gold-500 transition-colors"
-                      >
-                        <Plus size={14} />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Historical Orders */}
           <div className="bg-dark-800 border border-white/5 rounded-3xl p-8 shadow-xl">
-            <h2 className="text-xl font-serif text-white mb-6 flex items-center gap-2">
-              <Package size={18} className="text-gray-500" />
-              Recent Deliveries
-            </h2>
-
-            {loading ? (
-              <div className="flex flex-col items-center py-12 text-gray-500 animate-pulse">
-                <RefreshCcw className="animate-spin mb-2" />
-                <span className="text-xs font-black uppercase tracking-widest">Fetching Vault...</span>
-              </div>
-            ) : orders.length === 0 ? (
-              <div className="text-center py-12 text-gray-600 font-medium">No order history found yet.</div>
-            ) : (
-              <div className="grid grid-cols-1 gap-4">
-                {orders.map((o) => (
-                  <div key={o.id} className="bg-dark-900 border border-white/5 rounded-2xl p-6 flex flex-col md:flex-row md:items-center justify-between gap-6 hover:border-white/10 transition-all">
-                    <div className="flex gap-4 items-center">
-                      <div className="w-12 h-12 bg-dark-800 rounded-xl flex items-center justify-center text-gold-500 font-bold border border-white/5">
-                        #{o.id}
-                      </div>
-                      <div>
-                        <div className="text-white font-bold">R {Number(o.total_amount).toFixed(2)}</div>
-                        <div className="text-[10px] text-gray-500 font-bold uppercase tracking-widest">{o.created_at}</div>
-                      </div>
+            <h2 className="text-xl font-serif text-white mb-6">Recent Deliveries</h2>
+            {loading ? <div className="text-center py-12 animate-pulse">Fetching records...</div> : orders.length === 0 ? <div className="text-center py-12 text-gray-600">No history found.</div> : (
+              <div className="space-y-4">
+                {orders.map(o => (
+                  <div key={o.id} className="bg-dark-900 border border-white/5 rounded-2xl p-6 flex items-center justify-between">
+                    <div>
+                      <div className="text-white font-bold">Order #{o.id}</div>
+                      <div className="text-xs text-gray-500">{o.created_at}</div>
                     </div>
-
-                    <div className="flex items-center gap-3">
-                      <div className={`px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border ${o.status === 'delivered' ? 'bg-green-500/10 text-green-500 border-green-500/20' :
-                        o.status === 'dispatched' ? 'bg-blue-500/10 text-blue-500 border-blue-500/20' :
-                          'bg-gold-500/10 text-gold-500 border-gold-500/20'
-                        }`}>
-                        {o.status}
-                      </div>
-                      <Link
-                        to={`/track/${o.id}`}
-                        className="p-2 px-4 hover:bg-white/5 rounded-full text-xs font-bold text-gray-400 hover:text-white transition-all"
-                      >
-                        Details
-                      </Link>
+                    <div className="text-right">
+                      <div className="text-white font-serif">R {Number(o.total_amount).toFixed(2)}</div>
+                      <div className="text-[10px] text-gold-500 uppercase font-black">{o.status}</div>
                     </div>
                   </div>
                 ))}

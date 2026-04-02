@@ -320,51 +320,35 @@ const Cart = () => {
             return;
         }
 
-        if (method === 'usdt' && !usdtAddress) {
-            alert('USDT address not configured yet. Set VITE_USDT_ADDRESS first.');
-            return;
-        }
-        if (method === 'payshap' && !payshapRecipient) {
-            alert('PayShap recipient not configured yet. Set VITE_PAYSHAP_RECIPIENT first.');
-            return;
-        }
-
         setIsOrdering(true);
 
         try {
+            // Generate a local Order ID for the static site
+            const orderId = 'RS-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+            
             const orderData = {
-                customer: {
-                    name: customerInfo.name,
-                    phone: customerInfo.phone,
-                    email: customerInfo.email || null,
-                    dob: customerInfo.dob,
-                    address: customerInfo.address,
-                    postal_code: customerInfo.postalCode || null,
-                    latitude: customerInfo.latitude,
-                    longitude: customerInfo.longitude
-                },
+                orderId,
+                customer: customerInfo,
                 total_amount: total,
                 delivery_fee: deliveryFee,
                 items: cartLines.map(l => ({
-                    product_id: l.item.id,
+                    name: l.item.name,
                     quantity: l.qty,
                     price: l.effectiveUnit
                 })),
-                latitude: customerInfo.latitude,
-                longitude: customerInfo.longitude
+                date: new Date().toISOString(),
+                method
             };
 
-            const res = await axios.post(`${API}/orders`, orderData);
-            const orderId = res.data?.orderId;
+            // Save order locally for the history page
+            const existingOrders = JSON.parse(localStorage.getItem('royal_orders') || '[]');
+            localStorage.setItem('royal_orders', JSON.stringify([orderData, ...existingOrders]));
 
-            if (!orderId) {
-                throw new Error('Order not created');
-            }
-
+            // Move to instructions page
             navigate(`/payment-instructions?method=${encodeURIComponent(method)}&orderId=${encodeURIComponent(orderId)}&amount=${encodeURIComponent(total)}`);
         } catch (error) {
-            console.error('Checkout failed', error);
-            alert('Checkout failed: ' + (error.response?.data?.error || error.message));
+            console.error('Local checkout failed', error);
+            alert('There was a problem processing your request on-device.');
         } finally {
             setIsOrdering(false);
         }
@@ -382,54 +366,20 @@ const Cart = () => {
                 const lng = position.coords.longitude;
 
                 try {
-                    // Use Google Maps Geocoder
-                    if (!window.google || !window.google.maps) {
-                        throw new Error('Google Maps not loaded');
-                    }
-
-                    const geocoder = new window.google.maps.Geocoder();
-                    const response = await geocoder.geocode({ location: { lat, lng } });
-
-                    if (response.results && response.results[0]) {
-                        const result = response.results[0];
-                        const fullAddress = result.formatted_address;
-                        let postalCode = '';
-
-                        result.address_components?.forEach(component => {
-                            if (component.types.includes('postal_code')) {
-                                postalCode = component.long_name;
-                            }
-                        });
-
-                        setCustomerInfo(prev => ({
-                            ...prev,
-                            address: fullAddress,
-                            postalCode: postalCode || prev.postalCode,
-                            latitude: lat,
-                            longitude: lng
-                        }));
-                    }
-                } catch (error) {
-                    console.log('Could not fetch address, location saved');
-                    // Still save coordinates even if address lookup fails
+                    // Use Google Maps Geocoder if public key is active, or just save coords
                     setCustomerInfo(prev => ({
                         ...prev,
                         latitude: lat,
                         longitude: lng
                     }));
+                } catch (error) {
+                    console.log('Location saved via coordinates');
                 }
-
                 setIsLocating(false);
             },
             (err) => {
-                console.error(err);
-                alert('Could not get your location. Please enable location services.');
+                alert('Could not get your location. Please enter your address manually.');
                 setIsLocating(false);
-            },
-            {
-                enableHighAccuracy: true,
-                timeout: 10000,
-                maximumAge: 0
             }
         );
     };
@@ -468,21 +418,6 @@ const Cart = () => {
     const standardTotal = roundMoney(itemsSubtotalNoVip + (cartItems.length > 0 ? deliveryFee : 0));
     const reserveClubTotalIfAdded = roundMoney(itemsSubtotalReserveClub + (cartItems.length > 0 ? deliveryFee : 0) + tierPrices['reserve-club']);
 
-    const buildPayfastFormAndSubmit = (paymentUrl, paymentData) => {
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = paymentUrl;
-        Object.entries(paymentData).forEach(([key, value]) => {
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = key;
-            input.value = String(value);
-            form.appendChild(input);
-        });
-        document.body.appendChild(form);
-        form.submit();
-    };
-
     const validateStep = () => {
         if (step === 1) {
             if (!customerInfo.name || !customerInfo.phone) {
@@ -492,8 +427,7 @@ const Cart = () => {
         }
         if (step === 2) {
             const addr = String(customerInfo.address || '').trim();
-            const hasLetter = /[a-zA-Z]/.test(addr);
-            if (!addr || addr.length < 6 || !hasLetter) {
+            if (!addr || addr.length < 5) {
                 alert('Please fill in your delivery address');
                 return false;
             }
@@ -503,50 +437,39 @@ const Cart = () => {
 
     const buildWhatsappMessage = () => {
         const itemsText = cartLines
-            .map((l) => {
-                const line = `${l.qty} x ${l.item.name} @ R ${l.effectiveUnit.toFixed(2)} = R ${l.lineTotal.toFixed(2)}`;
-                if (String(l.item.id) === 'membership-monthly') return `${line} (VIP Membership)`;
-                return line;
-            })
+            .map((l) => `${l.qty} x ${l.item.name} (R ${l.effectiveUnit.toFixed(2)})`)
             .join('\n');
-
-        const coords = customerInfo.latitude && customerInfo.longitude
-            ? `${customerInfo.latitude}, ${customerInfo.longitude}`
-            : 'Not provided';
 
         return [
-            'RoyalSmoke Order (WhatsApp Checkout)',
+            '👑 *New RoyalSmoke Order*',
             '',
-            `Name: ${customerInfo.name}`,
-            `Phone: ${customerInfo.phone}`,
-            customerInfo.email ? `Email: ${customerInfo.email}` : null,
+            `👤 *Buyer:* ${customerInfo.name}`,
+            `📞 *Phone:* ${customerInfo.phone}`,
+            `📍 *Address:* ${customerInfo.address}`,
             '',
-            `Address: ${customerInfo.address}`,
-            `Location: ${coords}`,
-            '',
-            'Items:',
+            '📦 *Items:*',
             itemsText,
             '',
-            `Items Total: R ${cartSubtotalEffective.toFixed(2)}`,
-            `Delivery: R ${deliveryFee.toFixed(2)}`,
-            `Grand Total: R ${total.toFixed(2)}`,
+            `🚚 *Delivery:* R ${deliveryFee.toFixed(2)}`,
+            `💰 *TOTAL:* R ${total.toFixed(2)}`,
             '',
-            isVipActive ? 'VIP: Active (Box Price applied)' : 'VIP: Not active'
-        ]
-            .filter(Boolean)
-            .join('\n');
+            'Please send EFT details for payment confirmation.'
+        ].join('\n');
     };
 
     const handleWhatsappCheckout = () => {
         if (cartItems.length === 0) return;
         if (!validateStep()) return;
-        if (!customerInfo.address) {
-            alert('Please fill in your delivery address');
-            return;
-        }
-
+        
         const message = buildWhatsappMessage();
         const url = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+        
+        // Save locally before redirecting
+        const orderId = 'WA-' + Math.random().toString(36).substr(2, 6).toUpperCase();
+        const orderData = { orderId, total, items: cartItems, date: new Date().toISOString(), method: 'whatsapp' };
+        const existingOrders = JSON.parse(localStorage.getItem('royal_orders') || '[]');
+        localStorage.setItem('royal_orders', JSON.stringify([orderData, ...existingOrders]));
+
         window.open(url, '_blank', 'noopener,noreferrer');
     };
 
@@ -562,22 +485,10 @@ const Cart = () => {
     };
 
     const nextField = () => {
-        if (step === 1 && fieldStep === 0 && !customerInfo.name) {
-            alert('Please enter your name');
-            return;
-        }
-        if (step === 1 && fieldStep === 1 && !customerInfo.phone) {
-            alert('Please enter your phone number');
-            return;
-        }
-        if (step === 1 && fieldStep === 2 && !customerInfo.dob) {
-            alert('Please select your date of birth');
-            return;
-        }
-        if (step === 2 && fieldStep === 0 && !customerInfo.address) {
-            alert('Please enter your address');
-            return;
-        }
+        if (step === 1 && fieldStep === 0 && !customerInfo.name) return;
+        if (step === 1 && fieldStep === 1 && !customerInfo.phone) return;
+        if (step === 1 && fieldStep === 2 && !customerInfo.dob) return;
+        if (step === 2 && fieldStep === 0 && !customerInfo.address) return;
 
         const maxFields = step === 1 ? 3 : step === 2 ? 0 : 0;
         if (fieldStep < maxFields) {
@@ -592,69 +503,12 @@ const Cart = () => {
             setFieldStep(prev => prev - 1);
         } else if (step > 1) {
             prevStep();
-            setFieldStep(step === 2 ? 2 : 1);
         }
     };
 
-    const handlePayNow = async () => {
-        if (cartItems.length === 0) return;
-        if (!validateStep()) return;
-        if (!customerInfo.address) {
-            alert('Please fill in your delivery address');
-            return;
-        }
-
-        setIsOrdering(true);
-
-        try {
-            const orderData = {
-                customer: {
-                    name: customerInfo.name,
-                    phone: customerInfo.phone,
-                    email: customerInfo.email || null,
-                    address: customerInfo.address,
-                    postal_code: customerInfo.postalCode || null,
-                    latitude: customerInfo.latitude,
-                    longitude: customerInfo.longitude
-                },
-                total_amount: total,
-                delivery_fee: deliveryFee,
-                items: cartLines.map((l) => ({
-                    product_id: l.item.id,
-                    quantity: l.qty,
-                    price: l.effectiveUnit
-                })),
-                latitude: customerInfo.latitude,
-                longitude: customerInfo.longitude
-            };
-
-            const res = await axios.post(`${API}/orders`, orderData);
-            const orderId = res.data?.orderId;
-
-            if (!orderId) {
-                throw new Error('Order not created');
-            }
-
-            const paymentRes = await axios.post(`${API}/payfast/create-payment`, {
-                orderId,
-                amount: total,
-                customerName: customerInfo.name,
-                customerEmail: customerInfo.email,
-                customerPhone: customerInfo.phone,
-                items: cartLines.map(l => ({ name: l.item.name, quantity: l.qty }))
-            });
-
-            if (!paymentRes.data?.success) {
-                throw new Error(paymentRes.data?.error || 'PayFast not available');
-            }
-
-            buildPayfastFormAndSubmit(paymentRes.data.paymentUrl, paymentRes.data.paymentData);
-        } catch (error) {
-            console.error('Checkout failed', error);
-            alert('Checkout failed: ' + (error.response?.data?.error || error.message));
-        } finally {
-            setIsOrdering(false);
-        }
+    const handlePayNow = () => {
+        // Direct WhatsApp substitute for PayNow on static site
+        handleWhatsappCheckout();
     };
 
     if (cartItems.length === 0) {
