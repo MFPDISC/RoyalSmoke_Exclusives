@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Outlet, Link } from 'react-router-dom';
-import { ShoppingCart, LogIn, Menu, X, Zap, Leaf } from 'lucide-react';
+import { ShoppingCart, LogIn, Menu, X, Zap, Leaf, Crown } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import LeadMagnetPopup from '../components/LeadMagnetPopup';
 
@@ -195,6 +195,10 @@ const MainLayout = () => {
                                 <Leaf className="w-5 h-5 group-hover:fill-green-500/20" />
                                 <span>Dispensary</span>
                             </Link>
+                            <Link to="/join" className="flex items-center gap-2 bg-gold-500 text-black font-black px-4 py-2 rounded-lg hover:bg-gold-400 transition-all text-sm">
+                                <Crown className="w-4 h-4" />
+                                <span>Join</span>
+                            </Link>
                             <Link to="/account" className="hover:text-gold-400 transition flex items-center gap-2">
                                 <LogIn className="w-5 h-5" />
                                 <span>My Account</span>
@@ -227,6 +231,10 @@ const MainLayout = () => {
                         <Link to="/dispensary" className="block py-2 text-green-500 font-bold flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
                             <Leaf size={18} />
                             Dispensary
+                        </Link>
+                        <Link to="/join" className="block py-2 text-gold-400 font-bold flex items-center gap-2" onClick={() => setIsMenuOpen(false)}>
+                            <Crown size={18} />
+                            Become a Member
                         </Link>
                         <Link to="/account" className="block py-2 hover:text-gold-400" onClick={() => setIsMenuOpen(false)}>My Account</Link>
                         <Link to="/cart" className="block py-2 hover:text-gold-400" onClick={() => setIsMenuOpen(false)}>Cart ({cartCount})</Link>

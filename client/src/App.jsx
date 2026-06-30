@@ -28,6 +28,8 @@ const OrderTracking = lazy(() => import('./pages/OrderTracking'));
 const Admin = lazy(() => import('./pages/Admin'));
 const StoreDashboard = lazy(() => import('./pages/StoreDashboard'));
 const Dispensary = lazy(() => import('./pages/Dispensary'));
+const MemberSignup = lazy(() => import('./pages/MemberSignup'));
+const MembersAdmin = lazy(() => import('./pages/MembersAdmin'));
 
 const API = import.meta.env.VITE_API_URL || 'http://localhost:5001/api';
 
@@ -684,6 +686,8 @@ function App() {
               <Route path="dispensary" element={<Dispensary />} />
               <Route path="admin" element={<Admin />} />
               <Route path="store" element={<StoreDashboard />} />
+              <Route path="join" element={<MemberSignup />} />
+              <Route path="members-admin" element={<MembersAdmin />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Route>
           </Routes>

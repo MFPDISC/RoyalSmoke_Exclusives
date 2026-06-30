@@ -19,6 +19,7 @@ const twilioWebhooks = require('./routes/twilio_webhooks');
 const twilioService = require('./services/twilioService'); // Ensure service is loaded
 const leadsRoutes = require('./routes/leads');
 const ghlRoutes = require('./routes/ghl');
+const membersRoutes = require('./routes/members');
 
 const app = express();
 const PORT = process.env.PORT || 5001;
@@ -42,6 +43,7 @@ app.use('/api/inventory', inventoryRoutes);
 app.use('/api/vip', vipRoutes);
 app.use('/api/leads', leadsRoutes);
 app.use('/api/ghl', ghlRoutes);
+app.use('/api/members', membersRoutes);
 
 // Database Connection
 const db = new Database(dbPath, { verbose: console.log });
@@ -81,10 +83,17 @@ const ensureProductColumns = () => {
 ensureUserColumns();
 ensureProductColumns();
 
-// Basic Route
-app.get('/', (req, res) => {
-    res.send('RoyalSmoke API Verified');
-});
+// Serve React frontend
+const frontendPath = path.resolve(__dirname, '../client/dist');
+if (require('fs').existsSync(frontendPath)) {
+    app.use(express.static(frontendPath));
+    app.get('*', (req, res, next) => {
+        if (req.path.startsWith('/api/')) return next();
+        res.sendFile(path.join(frontendPath, 'index.html'));
+    });
+} else {
+    app.get('/', (req, res) => res.send('RoyalSmoke API Running'));
+}
 
 // Setup Twilio inbound voice webhooks
 app.use('/api/twilio', twilioWebhooks);
